@@ -1,7 +1,9 @@
 # My file
 AROI
-
-
+RETOUCH
+RETOUCH_PROCESSED_NNUNET
+bin
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
