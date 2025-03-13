@@ -69,7 +69,7 @@ class ProcessDataset:
         """
         image = sitk.ReadImage(mhd_file)
         patient_id = str.replace(patient_id, "TRAIN", "")
-        output_path = os.path.join(output_dir, output_type, f"TRAIN_{patient_id}_0000  .nii.gz")
+        output_path = os.path.join(output_dir, output_type, f"TRAIN_{patient_id}_0000.nii.gz")
         if flagLabel:
             output_path = os.path.join(output_dir, output_type, f"TRAIN_{patient_id}.nii.gz")
         sitk.WriteImage(image, output_path)
