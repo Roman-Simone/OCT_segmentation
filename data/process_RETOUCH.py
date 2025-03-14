@@ -24,6 +24,11 @@ class ProcessDataset:
 
         # Take the training directories
         training_dirs = self.take_retouch_train_dir()
+        
+        dataset_total_path = f"{unet_raw_dir}/Dataset00{len(training_dirs)}_Total"
+        os.makedirs(dataset_total_path, exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "imagesTr"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "labelsTr"), exist_ok=True)
 
         for pos, dir in enumerate(training_dirs):
             patient_dirs = sorted(os.listdir(os.path.join(self.input_dir, dir)))
@@ -47,9 +52,13 @@ class ProcessDataset:
                     # Convert the MHD files to NIfTI
                     self.convert_mhd_to_nii(dataset_path, oct_file, patient_dir, "imagesTr")
                     self.convert_mhd_to_nii(dataset_path, reference_file, patient_dir, "labelsTr", flagLabel=True)
+                    
+                    self.convert_mhd_to_nii(dataset_total_path, oct_file, patient_dir, "imagesTr")
+                    self.convert_mhd_to_nii(dataset_total_path, reference_file, patient_dir, "labelsTr", flagLabel=True)
 
             # After processing, create the dataset JSON for this specific dataset
             self.create_json_retouch(dataset_path, pos)
+        self.create_json_retouch(dataset_total_path, len(training_dirs))
 
     def take_retouch_train_dir(self) -> list:
         """
