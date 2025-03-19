@@ -13,4 +13,6 @@ source ~/.bashrc
 conda activate oct
 
 
-nnUNetv2_train 003 3d_fullres 4
+# nnUNetv2_train 003 3d_fullres 4
+
+nnUNetv2_predict -i /home/simone.roman/OCT_segmentation/data/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset002_Set/imagesTr -o /home/simone.roman/OCT_segmentation/output -d 003 -c 3d_fullres -f 4 --save_probabilities
