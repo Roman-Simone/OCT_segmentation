@@ -1,0 +1,3 @@
+[submodule "src/models/nnUNET"]
+	path = src/models/nnUNET
+	url = https://github.com/MIC-DKFZ/nnUNet.git
