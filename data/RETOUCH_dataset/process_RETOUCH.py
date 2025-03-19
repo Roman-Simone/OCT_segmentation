@@ -33,10 +33,10 @@ class ProcessDataset:
         
         dataset_total_path = f"{unet_raw_dir}/Dataset00{len(dirs)}_Total"
         os.makedirs(dataset_total_path, exist_ok=True)    
-        os.makedirs(os.path.join(dataset_total_path, "imagesTrain"), exist_ok=True)
-        os.makedirs(os.path.join(dataset_total_path, "labelsTrain"), exist_ok=True)
-        os.makedirs(os.path.join(dataset_total_path, "imagesTest"), exist_ok=True)
-        os.makedirs(os.path.join(dataset_total_path, "labelsTest"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "imagesTr"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "labelsTr"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "imagesTe"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "labelsTe"), exist_ok=True)
 
         for pos, dir in enumerate(dirs):
             
@@ -47,10 +47,10 @@ class ProcessDataset:
             name_dir = str.replace(name_dir, " ", "")
             dataset_path = f"{unet_raw_dir}/Dataset00{pos}_{name_dir}"
             os.makedirs(dataset_path, exist_ok=True)
-            os.makedirs(os.path.join(dataset_path, "imagesTrain"), exist_ok=True)
-            os.makedirs(os.path.join(dataset_path, "labelsTrain"), exist_ok=True)
-            os.makedirs(os.path.join(dataset_path, "imagesTest"), exist_ok=True)
-            os.makedirs(os.path.join(dataset_path, "labelsTest"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "imagesTr"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "labelsTr"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "imagesTe"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "labelsTe"), exist_ok=True)
 
             pos = 0
             for patient_dir in tqdm(patient_dirs, desc=f"Processing {dir}", unit="patient"):
@@ -67,9 +67,9 @@ class ProcessDataset:
                     # Check if the patient is in the training or testing set
                     if pos < TRAIN * len(patient_dirs):
                         pos += 1
-                        train_test_dir = "Train"
+                        train_test_dir = "Tr"
                     else:
-                        train_test_dir = "Test"
+                        train_test_dir = "Te"
                     # Convert the MHD files to NIfTI
                     self.convert_mhd_to_nii(dataset_path, oct_file, patient_dir, f"images{train_test_dir}")
                     self.convert_mhd_to_nii(dataset_path, reference_file, patient_dir, f"labels{train_test_dir}", flagLabel=True)
@@ -135,7 +135,7 @@ class ProcessDataset:
         """
             Get the number of training cases in the dataset.
         """
-        training_images_dir = os.path.join(dataset_path, 'imagesTrain')
+        training_images_dir = os.path.join(dataset_path, 'imagesTr')
         patient_dirs = os.listdir(training_images_dir)
         return len(patient_dirs)
 
