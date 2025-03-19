@@ -4,6 +4,10 @@ import shutil
 import SimpleITK as sitk
 from tqdm import tqdm
 
+
+TRAIN = 0.8
+TEST = 0.2
+
 class ProcessDataset:
 
     def __init__(self, input_data: str, output_data: str):
@@ -23,14 +27,19 @@ class ProcessDataset:
         unet_raw_dir = os.path.join(self.output_dir, "nnUNet_raw")
 
         # Take the training directories
-        training_dirs = self.take_retouch_train_dir()
+        dirs = self.take_retouch_dir()
+        print(len(dirs))
         
-        dataset_total_path = f"{unet_raw_dir}/Dataset00{len(training_dirs)}_Total"
-        os.makedirs(dataset_total_path, exist_ok=True)
-        os.makedirs(os.path.join(dataset_total_path, "imagesTr"), exist_ok=True)
-        os.makedirs(os.path.join(dataset_total_path, "labelsTr"), exist_ok=True)
+        
+        dataset_total_path = f"{unet_raw_dir}/Dataset00{len(dirs)}_Total"
+        os.makedirs(dataset_total_path, exist_ok=True)    
+        os.makedirs(os.path.join(dataset_total_path, "imagesTrain"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "labelsTrain"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "imagesTest"), exist_ok=True)
+        os.makedirs(os.path.join(dataset_total_path, "labelsTest"), exist_ok=True)
 
-        for pos, dir in enumerate(training_dirs):
+        for pos, dir in enumerate(dirs):
+            
             patient_dirs = sorted(os.listdir(os.path.join(self.input_dir, dir)))
 
             name_dir = str.replace(dir, "Training", "")
@@ -38,29 +47,43 @@ class ProcessDataset:
             name_dir = str.replace(name_dir, " ", "")
             dataset_path = f"{unet_raw_dir}/Dataset00{pos}_{name_dir}"
             os.makedirs(dataset_path, exist_ok=True)
-            os.makedirs(os.path.join(dataset_path, "imagesTr"), exist_ok=True)
-            os.makedirs(os.path.join(dataset_path, "labelsTr"), exist_ok=True)
-            n=0
+            os.makedirs(os.path.join(dataset_path, "imagesTrain"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "labelsTrain"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "imagesTest"), exist_ok=True)
+            os.makedirs(os.path.join(dataset_path, "labelsTest"), exist_ok=True)
+
+            pos = 0
             for patient_dir in tqdm(patient_dirs, desc=f"Processing {dir}", unit="patient"):
-                n+=1
+                
+                
+                
                 patient_path = os.path.join(self.input_dir, dir, patient_dir)
 
                 oct_file = os.path.join(patient_path, 'oct.mhd')
                 reference_file = os.path.join(patient_path, 'reference.mhd')
 
                 if os.path.exists(oct_file) and os.path.exists(reference_file):
-                    # Convert the MHD files to NIfTI
-                    self.convert_mhd_to_nii(dataset_path, oct_file, patient_dir, "imagesTr")
-                    self.convert_mhd_to_nii(dataset_path, reference_file, patient_dir, "labelsTr", flagLabel=True)
                     
-                    self.convert_mhd_to_nii(dataset_total_path, oct_file, patient_dir, "imagesTr")
-                    self.convert_mhd_to_nii(dataset_total_path, reference_file, patient_dir, "labelsTr", flagLabel=True)
+                    # Check if the patient is in the training or testing set
+                    if pos < TRAIN * len(patient_dirs):
+                        pos += 1
+                        train_test_dir = "Train"
+                    else:
+                        train_test_dir = "Test"
+                    # Convert the MHD files to NIfTI
+                    self.convert_mhd_to_nii(dataset_path, oct_file, patient_dir, f"images{train_test_dir}")
+                    self.convert_mhd_to_nii(dataset_path, reference_file, patient_dir, f"labels{train_test_dir}", flagLabel=True)
+                    
+                    self.convert_mhd_to_nii(dataset_total_path, oct_file, patient_dir, f"images{train_test_dir}")
+                    self.convert_mhd_to_nii(dataset_total_path, reference_file, patient_dir, f"labels{train_test_dir}", flagLabel=True)
+                    
+                    
 
             # After processing, create the dataset JSON for this specific dataset
             self.create_json_retouch(dataset_path, pos)
-        self.create_json_retouch(dataset_total_path, len(training_dirs))
+        self.create_json_retouch(dataset_total_path, len(dirs))
 
-    def take_retouch_train_dir(self) -> list:
+    def take_retouch_dir(self) -> list:
         """
             Take the directories that contain the training data of the RETOUCH dataset.
         """
@@ -91,7 +114,7 @@ class ProcessDataset:
 
         dataset_info = {
             "channel_names": {
-                "0": "OCT"  # Assuming OCT is the modality here
+                "0": "OCT"  
             },
             "labels": {
                 "background": 0,
@@ -112,15 +135,15 @@ class ProcessDataset:
         """
             Get the number of training cases in the dataset.
         """
-        training_images_dir = os.path.join(dataset_path, 'imagesTr')
+        training_images_dir = os.path.join(dataset_path, 'imagesTrain')
         patient_dirs = os.listdir(training_images_dir)
         return len(patient_dirs)
 
 
 if __name__ == "__main__":
     # Define the input and output directories
-    input_data = "data/RETOUCH"
-    output_data = "data/RETOUCH_PROCESSED_NNUNET"
+    input_data = "data/RETOUCH_dataset/RETOUCH"
+    output_data = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET"
 
     # Create an instance of ProcessDataset and start the process
     processor = ProcessDataset(input_data, output_data)
