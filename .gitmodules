@@ -1,3 +1,8 @@
 [submodule "src/models/nnUNET/nn_UNet"]
 	path = src/models/nnUNET/nn_UNet
 	url = https://github.com/MIC-DKFZ/nnUNet.git
+
+
+[submodule "src/models/MedNeXt"]
+	path = src/models/MedNeXt
+	url = https://github.com/MIC-DKFZ/MedNeXt.git
