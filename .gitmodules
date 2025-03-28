@@ -4,6 +4,4 @@
 [submodule "src/models/medNeXt"]
 	path = src/models/medNeXt
 	url = https://github.com/MIC-DKFZ/MedNeXt.git
-[submodule "src/models/MedNeXt"]
-	path = src/models/MedNeXt
-	url = https://github.com/MIC-DKFZ/MedNeXt.git
+
