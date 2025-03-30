@@ -38,7 +38,6 @@ class ProcessDataset:
 
         # Take the training directories
         dirs = self.take_retouch_dir()
-        print(len(dirs))
         
         
         dataset_total_path = f"{samed_raw_dir}/Dataset00{len(dirs)}_Total"
@@ -111,9 +110,9 @@ class ProcessDataset:
         """
         image = sitk.ReadImage(mhd_file)
         patient_id = str.replace(patient_id, "TRAIN", "")
-        output_path = os.path.join(output_dir, output_type, f"img{patient_id}.nii.gz")
+        output_path = os.path.join(output_dir, output_type, f"img0{patient_id}.nii.gz")
         if flagLabel:
-            output_path = os.path.join(output_dir, output_type, f"lbl{patient_id}.nii.gz")
+            output_path = os.path.join(output_dir, output_type, f"lbl0{patient_id}.nii.gz")
         sitk.WriteImage(image, output_path)
 
     def create_json_retouch(self, dataset_path, pos):
