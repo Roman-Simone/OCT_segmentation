@@ -1,10 +1,11 @@
 [submodule "src/models/nnUNet"]
 	path = src/models/nnUNet
 	url = https://github.com/MIC-DKFZ/nnUNet.git
+
 [submodule "src/models/medNeXt"]
 	path = src/models/medNeXt
 	url = https://github.com/MIC-DKFZ/MedNeXt.git
-
+	
 [submodule "src/models/samEd"]
 	path = src/models/samEd
 	url = https://github.com/hitachinsk/SAMed.git
