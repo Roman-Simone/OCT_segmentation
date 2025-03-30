@@ -24,3 +24,8 @@ conda activate oct
 # nnUNetv2_predict -i /home/simone.roman/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/imagesTe -o /home/simone.roman/OCT_segmentation/prediction_2d -d 003 -c 2d -f 4 --save_probabilities
 nnUNetv2_predict -i /home/simone.roman/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/imagesTe -o /home/simone.roman/OCT_segmentation/prediction_3d_fullres -d 003 -c 3d_fullres -f 4 --save_probabilities
 nnUNetv2_predict -i /home/simone.roman/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/imagesTe -o /home/simone.roman/OCT_segmentation/prediction_3d_lowres -d 003 -c 3d_lowres -f 4 --save_probabilities
+
+
+###### MEDNEXT
+
+# mednextv1_plan_and_preprocess -t 000 001 002 003 -pl3d ExperimentPlanner3D_v21_customTargetSpacing_1x1x1 -pl2d ExperimentPlanner2D_v21_customTargetSpacing_1x1x1
