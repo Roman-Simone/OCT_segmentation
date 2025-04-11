@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
 # Percorsi ai file
-label_path = "data/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset002_Set/labelsTr/TRAIN_049.nii.gz"
-image_path = "data/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset002_Set/imagesTr/TRAIN_049_0000.nii.gz"
-prediction_path = "output2/TRAIN_049.nii.gz"
+label_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/labelsTe/TRAIN_021.nii.gz"
+image_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/imagesTe/TRAIN_021_0000.nii.gz"
+prediction_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_prediction/prediction_2d/TRAIN_021.nii.gz"
 
 # Carica i dati
 image = nib.load(image_path).get_fdata()
