@@ -29,3 +29,11 @@ nnUNetv2_predict -i /home/simone.roman/OCT_segmentation/data/RETOUCH_dataset/RET
 ###### MEDNEXT
 
 # mednextv1_plan_and_preprocess -t 000 001 002 003 -pl3d ExperimentPlanner3D_v21_customTargetSpacing_1x1x1 -pl2d ExperimentPlanner2D_v21_customTargetSpacing_1x1x1
+
+
+
+##### SAMED
+
+python src\\models\\samEd\\train.py --root_path "C:\\Users\\simone.roman\\project\\OCT_segmentation\\data\\RETOUCH_dataset\\RETOUCH_PROCESSED_SAMED\\samed_npz\\Dataset003_Total" --output "C:\\Users\\simone.roman\\project\\OCT_segmentation\\data\\RETOUCH_dataset\\RETOUCH_PROCESSED_SAMED\\results" --dataset "Retouch" --num_classes 4 --n_gpu 1
+
+

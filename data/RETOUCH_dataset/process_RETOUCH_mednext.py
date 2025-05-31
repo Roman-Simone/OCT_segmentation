@@ -1,8 +1,10 @@
 import os
 import json
 import shutil
-import SimpleITK as sitk
+import argparse
 from tqdm import tqdm
+import SimpleITK as sitk
+
 
 
 TRAIN = 0.8
@@ -94,6 +96,23 @@ class ProcessDataset:
                     directories.append(dir_name)
         return directories
 
+    def take_directories(self, path: str, key_word="") -> list:
+        """
+            Take the directories that contain the training data of the RETOUCH dataset.
+        """
+        directories = []
+
+        for root, dirs, _ in os.walk(path):
+            for dir_name in dirs:
+                
+                if key_word=="":
+                    directories.append(dir_name)
+                elif key_word in dir_name:
+                    directories.append(dir_name)
+                
+        return directories
+    
+    
     def convert_mhd_to_nii(self, output_dir, mhd_file, patient_id, output_type, flagLabel=False):
         """
             Convert an MHD file to NIfTI format.
@@ -145,11 +164,89 @@ class ProcessDataset:
         return len(patient_dirs)
 
 
+
+    def fix_medNet_plan(self):
+        
+        path = os.path.join(self.output_dir, "nnUNet_raw_data")
+        
+        dir_datasets = self.take_directories(path)  
+        
+        for dir_dataset in dir_datasets:
+            
+            dataset_path = os.path.join(path, dir_dataset)
+            
+            source_folder = os.path.join(dataset_path, "imagesTr")
+            destination_folder = os.path.join(self.output_dir, "nnUNet_cropped_data")
+            destination_folder = os.path.join(destination_folder, dir_dataset)
+
+
+            # Elenco tutti i file nella cartella di origine
+            for filename in os.listdir(source_folder):
+                # Controlla se il file è un .npz o un .pkl
+                if filename.endswith('.npz') or filename.endswith('.pkl'):
+                    # Percorso completo dei file
+                    source_file = os.path.join(source_folder, filename)
+                    destination_file = os.path.join(destination_folder, filename)
+
+                    try:
+                        # Sposta il file
+                        shutil.copy(source_file, destination_file)
+                        print(f"File {filename} spostato con successo.")
+                    except Exception as e:
+                        print(f"Errore nel spostare il file {filename}: {e}")
+
+    def clean_dir(self):
+        
+        path = os.path.join(self.output_dir, "nnUNet_raw_data")
+        
+        dir_datasets = self.take_directories(path)  
+        
+        for dir_dataset in dir_datasets:
+            
+            dataset_path = os.path.join(path, dir_dataset)
+            
+            source_folder = os.path.join(dataset_path, "imagesTr")
+
+            # Elenco tutti i file nella cartella di origine
+            for filename in os.listdir(source_folder):
+                # Controlla se il file è un .npz o un .pkl
+                if filename.endswith('.npz') or filename.endswith('.pkl'):
+                    # Percorso completo dei file
+                    source_file = os.path.join(source_folder, filename)
+                    
+                    try:
+                        # Sposta il file
+                        os.remove(source_file)
+                        print(f"File {filename} spostato con successo.")
+                    except Exception as e:
+                        print(f"Errore nel spostare il file {filename}: {e}")
+
+
 if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser(description="Process RETOUCH dataset")
+    parser.add_argument(
+        "--fix", 
+        action="store_true", 
+        help="Run only the fix_medNet_plan function"
+    )
+    parser.add_argument(
+        "--clean", 
+        action="store_true", 
+        help="Run only the cleaning function (e.g., delete specific files or directories)"
+    )
+    args = parser.parse_args()
+
     # Define the input and output directories
     input_data = "data/RETOUCH_dataset/RETOUCH"
     output_data = "data/RETOUCH_dataset/RETOUCH_PROCESSED_MEDNEXT"
 
-    # Create an instance of ProcessDataset and start the process
+    # Create an instance of ProcessDataset
     processor = ProcessDataset(input_data, output_data)
-    processor.processRetouch()
+
+    if args.fix:
+        processor.fix_medNet_plan()  # Run only the fix_medNet_plan function
+    elif args.clean:
+        processor.clean_dir()
+    else:
+        processor.processRetouch()  # Run the full processing
