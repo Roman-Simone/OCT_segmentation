@@ -1,4 +1,5 @@
 import os
+import re
 import h5py
 import json
 import shutil
@@ -149,50 +150,109 @@ class ProcessDataset:
         return len(patient_dirs)
 
     def preprocess_retouch_npz(self) -> None:
+        """
+            Preprocess the NIfTI images to .npz slices for training.
+            Applies clipping, normalization, axis transpose, and label remapping.
+        """
+        a_min, a_max = -125, 275
+        b_min, b_max = 0.0, 1.0  # for normalization
 
-        #navigate the directory inside the output dir
-        
         for dir in os.listdir(f"{self.output_dir}/samed_raw"):
-        
             image_files = sorted(glob(f"{self.output_dir}/samed_raw/{dir}/imagesTr/*.nii.gz"))
             label_files = sorted(glob(f"{self.output_dir}/samed_raw/{dir}/labelsTr/*.nii.gz"))
 
-            a_min, a_max = -125, 275
-            b_min, b_max = 0.0, 1.0
-
             pbar = tqdm(zip(image_files, label_files), total=len(image_files),  desc=f"Processing npz {dir}", unit="patient")
             for image_file, label_file in pbar:
-                # **/imgXXXX.nii.gz -> parse XXXX
                 number = image_file.split('/')[-1][3:7]
 
+                image_data = nib.load(image_file).get_fdata().astype(np.float32)
+                label_data = nib.load(label_file).get_fdata().astype(np.float32)
 
-                image_data = nib.load(image_file).get_fdata()
-                label_data = nib.load(label_file).get_fdata()
-
-                image_data = image_data.astype(np.float32)
-                label_data = label_data.astype(np.float32)
-
+                # 📉 Clipping
                 image_data = np.clip(image_data, a_min, a_max)
-                # if args.use_normalize:
-                #     assert a_max != a_min
-                #     image_data = (image_data - a_min) / (a_max - a_min)
 
-                H, W, D = image_data.shape
+                # ⚖️ Normalizzazione in [0, 1]
+                image_data = (image_data - a_min) / (a_max - a_min)
 
-                image_data = np.transpose(image_data, (2, 1, 0))  # [D, W, H]
+                # 🔁 Trasformazione assi: [H, W, D] -> [D, H, W]
+                image_data = np.transpose(image_data, (2, 1, 0))
                 label_data = np.transpose(label_data, (2, 1, 0))
 
-                counter = 0
-                for k in sorted(self.hashmap.keys()):
-                    assert counter == k
-                    counter += 1
-                    label_data[label_data == k] = self.hashmap[k]
+                # 🧠 Rimappatura delle label (se necessario)
+                for k, v in self.hashmap.items():
+                    label_data[label_data == k] = v
 
-                for dep in range(D):
+                # 💾 Salvataggio slice-by-slice in .npz
+                for dep in range(image_data.shape[0]):
                     os.makedirs(f"{self.output_dir}/samed_npz/{dir}", exist_ok=True)
                     save_path = f"{self.output_dir}/samed_npz/{dir}/case{number}_slice{dep:03d}.npz"
-                    np.savez(save_path, label=label_data[dep,:,:], image=image_data[dep,:,:])
+                    np.savez(save_path, label=label_data[dep, :, :], image=image_data[dep, :, :])
             pbar.close()
+
+            
+    def createlists_retouch(self) -> None:
+        """
+            Create the lists for the RETOUCH dataset.
+        """
+        if os.path.exists(f"{self.output_dir}/samed_lists"):
+            shutil.rmtree(f"{self.output_dir}/samed_lists")
+        os.makedirs(f"{self.output_dir}/samed_lists", exist_ok=True)
+
+        # Read all the npz files in the samed_npz directory
+        npz_files = sorted(glob(f"{self.output_dir}/samed_npz/Dataset003_Total/*.npz"))
+        
+        # take only the name of the file without the path and extension
+        npz_files = [os.path.basename(file).replace('.npz', '') for file in npz_files]
+        
+        
+        # Save the list of npz files in a text file
+        with open(f"{self.output_dir}/samed_lists/train.txt", 'w') as f:
+            for npz_file in npz_files:
+                f.write(f"{npz_file}\n")
+                
+    def prepare_testset_h5(self):
+        a_min, a_max = -125, 275
+        output_dir = os.path.join(self.output_dir, 'samed_test_h5')
+        os.makedirs(output_dir, exist_ok=True)
+
+        for dataset_dir in os.listdir(f"{self.output_dir}/samed_raw"):
+            image_files = sorted(glob(f"{self.output_dir}/samed_raw/{dataset_dir}/imagesTe/*.nii.gz"))
+            label_files = sorted(glob(f"{self.output_dir}/samed_raw/{dataset_dir}/labelsTe/*.nii.gz"))
+
+            print(f"🧾 Found {len(image_files)} images and {len(label_files)} labels in {dataset_dir}")
+
+            pbar = tqdm(zip(image_files, label_files), total=len(image_files), desc=f"Creating H5 for {dataset_dir}", unit="volume")
+            for image_file, label_file in pbar:
+                basename = os.path.basename(image_file)
+                match = re.search(r'img0(\d+)\.nii\.gz', basename)
+                if not match:
+                    print(f"⚠️ Nome file inatteso: {basename}")
+                    continue
+                number = match.group(1)
+
+                try:
+                    image_data = nib.load(image_file).get_fdata().astype(np.float32)
+                    label_data = nib.load(label_file).get_fdata().astype(np.float32)
+                except Exception as e:
+                    print(f"❌ Errore nel caricamento: {e}")
+                    continue
+
+                image_data = np.clip(image_data, a_min, a_max)
+                image_data = (image_data - a_min) / (a_max - a_min)
+                image_data = np.transpose(image_data, (2, 1, 0))
+                label_data = np.transpose(label_data, (2, 1, 0))
+
+                for k, v in self.hashmap.items():
+                    label_data[label_data == k] = v
+
+                h5_path = os.path.join(output_dir, f"case{number}.npy.h5")
+                with h5py.File(h5_path, 'w') as f:
+                    f.create_dataset("image", data=image_data)
+                    f.create_dataset("label", data=label_data)
+
+            pbar.close()
+                
+    
 
 
 if __name__ == "__main__":
@@ -202,5 +262,7 @@ if __name__ == "__main__":
 
     # Create an instance of ProcessDataset and start the process
     processor = ProcessDataset(input_data, output_data)
-    processor.process_retouch_raw()
-    processor.preprocess_retouch_npz()
+    #processor.process_retouch_raw()
+    #processor.preprocess_retouch_npz()
+    #processor.createlists_retouch()
+    processor.prepare_testset_h5() 

@@ -3,10 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
-# Percorsi ai file
-label_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/labelsTe/TRAIN_021.nii.gz"
-image_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/imagesTe/TRAIN_021_0000.nii.gz"
-prediction_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_prediction/prediction_2d/TRAIN_021.nii.gz"
+# Percorsi ai filej
+#label_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/labelsTe/TRAIN_021.nii.gz"
+#image_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset003_Total/imagesTe/TRAIN_021_0000.nii.gz"
+#prediction_path = "data/RETOUCH_dataset/RETOUCH_PROCESSED_NNUNET/nnUNet_prediction/prediction_2d/TRAIN_021.nii.gz"
+
+label_path = "C:\Users\simone.roman\project\OCT_segmentation\data\SAMED_try\prova2\predictions\case0002_gt.nii.gz"
+image_path = "C:\Users\simone.roman\project\OCT_segmentation\data\SAMED_try\prova2\predictions\case0002_img.nii.gz"
+prediction_path = "C:\Users\simone.roman\project\OCT_segmentation\data\SAMED_try\prova2\predictions\case0002_pred.nii.gz"
 
 # Carica i dati
 image = nib.load(image_path).get_fdata()
