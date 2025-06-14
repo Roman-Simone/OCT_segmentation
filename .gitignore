@@ -4,10 +4,13 @@ RETOUCH
 RETOUCH_PROCESSED_NNUNET
 RETOUCH_PROCESSED_MEDNEXT
 RETOUCH_PROCESSED_SAMED
+RETOUCH_PROCESSED_SAMED2
+testset
 bin
 .DS_Store
 output
 checkpoints
+SAMED_try
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,1 +1,3 @@
 # OCT_segmentation
+
+python train.py --root_path "C:\Users\simone.roman\project\OCT_segmentation\data\RETOUCH_dataset\RETOUCH_PROCESSED_SAMED\samed_npz\Dataset003_Total" --output "C:\Users\simone.roman\project\OCT_segmentation\data\RETOUCH_dataset\RETOUCH_PROCESSED_SAMED\results" --warmup --AdamW --ckpt "C:\Users\simone.roman\project\OCT_segmentation\checkpoints\sam_vit_b_01ec64.pth" --stop_epoch 100 --list_dir "C:\Users\simone.roman\project\OCT_segmentation\data\RETOUCH_dataset\RETOUCH_PROCESSED_SAMED\samed_lists" --n_gpu 1
