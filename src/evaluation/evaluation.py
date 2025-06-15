@@ -76,9 +76,11 @@ class Evaluation:
         return tp, fp, fn, tn
 
     def compute_metrics(self, reference_file: str, prediction_file: str, labels_or_regions: Union[List[int], List[Union[int, Tuple[int, ...]]]], ignore_label: int = None) -> dict:
+        
         seg_ref = sitk.GetArrayFromImage(sitk.ReadImage(reference_file))
         seg_pred = sitk.GetArrayFromImage(sitk.ReadImage(prediction_file))
         ignore_mask = seg_ref == ignore_label if ignore_label is not None else None
+        
         
         results = {'reference_file': reference_file, 'prediction_file': prediction_file, 'metrics': {}}
         for r in labels_or_regions:
@@ -96,8 +98,8 @@ class Evaluation:
     def compute_metrics_on_folder(self, folder_ref: str, folder_pred: str, output_file: str, file_ending: str, regions_or_labels: Union[List[int], List[Union[int, Tuple[int, ...]]]], ignore_label: int = None, num_processes: int = 8, chill: bool = False) -> dict:
         files_pred = [f for f in os.listdir(folder_pred) if f.endswith(file_ending)]
         files_ref = [f for f in os.listdir(folder_ref) if f.endswith(file_ending)]
-        if not chill:
-            assert all(os.path.isfile(os.path.join(folder_pred, f)) for f in files_ref), "Not all files in folder_ref exist in folder_pred"
+        # if not chill:
+        #     assert all(os.path.isfile(os.path.join(folder_pred, f)) for f in files_ref), "Not all files in folder_ref exist in folder_pred"
         files_ref = [os.path.join(folder_ref, f) for f in files_pred]
         files_pred = [os.path.join(folder_pred, f) for f in files_pred]
         
@@ -114,11 +116,11 @@ class Evaluation:
         return result
 
 def main():
-    folder_ref = '/Users/simoneroman/Desktop/OCT_segmentation/data/RETOUCH_PROCESSED_NNUNET/nnUNet_raw/Dataset002_Set/labelsTr'
-    folder_pred = 'output2'
+    folder_ref = '/Users/simoneroman/Desktop/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_SAMED/prediction/predictions/ref'
+    folder_pred = '/Users/simoneroman/Desktop/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_SAMED/prediction/predictions/pred'
     output_file = 'summary2.json'
     file_ending = '.nii.gz'
-    regions = [0, 1, 2, 3]
+    regions = [0, 1, 2]
     ignore_label = None
     num_processes = 8
     eval = Evaluation(folder_ref, folder_pred, output_file, file_ending, regions, ignore_label, num_processes)

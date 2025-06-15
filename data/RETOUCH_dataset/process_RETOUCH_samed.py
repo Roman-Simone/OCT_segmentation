@@ -204,7 +204,6 @@ class ProcessDataset:
         # take only the name of the file without the path and extension
         npz_files = [os.path.basename(file).replace('.npz', '') for file in npz_files]
         
-        
         # Save the list of npz files in a text file
         with open(f"{self.output_dir}/samed_lists/train.txt", 'w') as f:
             for npz_file in npz_files:
@@ -251,6 +250,34 @@ class ProcessDataset:
                     f.create_dataset("label", data=label_data)
 
             pbar.close()
+            
+    def createlists_retouch_test(self) -> None:
+        """
+        Create the test set list for the RETOUCH dataset.
+        """
+        test_dir = os.path.join(self.output_dir, "samed_npz", "Dataset003_Total")
+        if not os.path.exists(test_dir):
+            print(f"❌ Directory non trovata: {test_dir}")
+            return
+
+        test_files = sorted(glob(os.path.join(test_dir, "*.npz")))
+
+        # Mantieni solo quelli che provengono da immagini di test
+        test_case_ids = set()
+        te_dir = os.path.join(self.output_dir, "samed_raw", "Dataset003_Total", "imagesTe")
+        for f in os.listdir(te_dir):
+            match = re.search(r'img0(\d+)\.nii\.gz', f)
+            if match:
+                test_case_ids.add(f"case{match.group(1)}")
+
+        test_npz_files = [os.path.basename(f).replace('.npz', '') for f in test_files
+                        if any(f"_{tid}_" in f or f.startswith(tid) for tid in test_case_ids)]
+
+        # Salva
+        os.makedirs(os.path.join(self.output_dir, "samed_lists"), exist_ok=True)
+        with open(os.path.join(self.output_dir, "samed_lists", "test.txt"), 'w') as f:
+            for file in test_npz_files:
+                f.write(f"{file}\n")
                 
     
 
@@ -262,7 +289,8 @@ if __name__ == "__main__":
 
     # Create an instance of ProcessDataset and start the process
     processor = ProcessDataset(input_data, output_data)
-    #processor.process_retouch_raw()
-    #processor.preprocess_retouch_npz()
-    #processor.createlists_retouch()
-    processor.prepare_testset_h5() 
+    # processor.process_retouch_raw()
+    # processor.preprocess_retouch_npz()
+    # processor.createlists_retouch()
+    # processor.prepare_testset_h5() 
+    processor.createlists_retouch_test()

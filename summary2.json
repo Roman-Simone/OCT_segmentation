@@ -1,0 +1,89 @@
+{
+    "foreground_mean": {
+        "Dice": 0.0,
+        "FN": 204124.5,
+        "FP": 0.0,
+        "IoU": 0.0,
+        "TN": 66904739.5,
+        "TP": 0.0,
+        "f1": 0.0,
+        "n_pred": 0.0,
+        "n_ref": 204124.5
+    },
+    "mean": {
+        "0": {
+            "Dice": 0.9969490278039271,
+            "FN": 0.0,
+            "FP": 408249.0,
+            "IoU": 0.9939166158437729,
+            "TN": 0.0,
+            "TP": 66700615.0,
+            "f1": 0.9969490278039271,
+            "n_pred": 67108864.0,
+            "n_ref": 66700615.0
+        },
+        "1": {
+            "Dice": 0.0,
+            "FN": 338005.0,
+            "FP": 0.0,
+            "IoU": 0.0,
+            "TN": 66770859.0,
+            "TP": 0.0,
+            "f1": 0.0,
+            "n_pred": 0.0,
+            "n_ref": 338005.0
+        },
+        "2": {
+            "Dice": 0.0,
+            "FN": 70244.0,
+            "FP": 0.0,
+            "IoU": 0.0,
+            "TN": 67038620.0,
+            "TP": 0.0,
+            "f1": 0.0,
+            "n_pred": 0.0,
+            "n_ref": 70244.0
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "0": {
+                    "Dice": 0.9969490278039271,
+                    "FN": 0,
+                    "FP": 408249,
+                    "IoU": 0.9939166158437729,
+                    "TN": 0,
+                    "TP": 66700615,
+                    "f1": 0.9969490278039271,
+                    "n_pred": 67108864,
+                    "n_ref": 66700615
+                },
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 338005,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 66770859,
+                    "TP": 0,
+                    "f1": 0.0,
+                    "n_pred": 0,
+                    "n_ref": 338005
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 70244,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 67038620,
+                    "TP": 0,
+                    "f1": 0.0,
+                    "n_pred": 0,
+                    "n_ref": 70244
+                }
+            },
+            "prediction_file": "/Users/simoneroman/Desktop/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_SAMED/prediction/predictions/pred/case021.nii.gz",
+            "reference_file": "/Users/simoneroman/Desktop/OCT_segmentation/data/RETOUCH_dataset/RETOUCH_PROCESSED_SAMED/prediction/predictions/ref/case021.nii.gz"
+        }
+    ]
+}
